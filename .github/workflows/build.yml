@@ -26,7 +26,7 @@ jobs:
           docker build -t caddy-cloudflare:latest -f Dockerfile .
       - name: Run image tests
         run: |
-          docker run --rm ${{ secrets.DOCKERHUB_USERNAME }}/caddy-cloudflare:latest node --version   
+          docker run --rm ${{ vars.DOCKERHUB_USERNAME }}/caddy-cloudflare:latest node --version   
       - name: push the docker image
         id: push-docker-image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/caddy-cloudflare:latest
