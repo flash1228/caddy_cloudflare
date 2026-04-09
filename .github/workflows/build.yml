@@ -1,4 +1,4 @@
-name: Build Linux-arm64 Cloudlfare DNS Docker
+name: Linux-arm64 Cloudlfare DNS Docker
 on: [push]
 jobs:
   build-and-docker:
