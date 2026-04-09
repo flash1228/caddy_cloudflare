@@ -1,16 +1,19 @@
-name: Linux-arm64 Cloudlfare DNS Docker
+name: Build Linux-arm64 Cloudlfare DNS Docker
 on: [push]
 jobs:
   build-and-docker:
     runs-on: ubuntu-22.04-arm
     steps:
       - uses: actions/checkout@v4
-      - uses: azolfagharj/action-caddy-builder@v1.0.7
+      - uses: azolfagharj/action-caddy-builder@v1
         id: build
         with:
           caddy-version: latest
           output-dir: ./dist
           modules: github.com/caddy-dns/cloudflare
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }}--password-stdin          
       - name: Build Docker image
         run: |
           cat > Dockerfile << 'EOF'
@@ -19,5 +22,9 @@ jobs:
           ENTRYPOINT ["/caddy"]
           EOF
           docker build -t caddy-custom:latest -f Dockerfile .
-      - name: Run container
-        run: docker run --rm caddy-custom:latest version          
+      - name: Run image tests
+        run: |
+          docker run --rm ${{secrets.DOCKERHUB_USERNAME}}/caddy-custom:latest node --version   
+      - name: push the docker image
+        id: push-docker-image
+        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/caddy-custom:latest
